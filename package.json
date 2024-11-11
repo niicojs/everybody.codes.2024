@@ -1,0 +1,12 @@
+{
+  "name": "everybody.codes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "type": "module",
+  "dependencies": {
+    "consola": "^3.2.3",
+    "dotenv": "^16.4.5"
+  }
+}
