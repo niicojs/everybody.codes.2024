@@ -1,7 +1,7 @@
+import path from 'path';
 import { readFileSync } from 'fs';
 import { consola } from 'consola';
 import { formatElapsedTime, getCurrentDay, getDataLines } from '../utils.js';
-import path from 'path';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -35,17 +35,22 @@ for (const [c, p] of raw) {
   paths.set(c, p);
 }
 
-for (let i = 0; i < track.length; i++) {
-  const mod = track.at(i);
-  for (const c of chars.keys()) {
-    let action = paths.get(c)[i % paths.get(c).length];
-    
-    if (mod === '+') action = '+';
-    if (mod === '-') action = '-';
-    if (action === '+') chars.set(c, chars.get(c) + 1);
-    if (action === '-') chars.set(c, Math.max(0, chars.get(c) - 1));
+let i = 0;
+for (let x = 0; x < 10; x++) {
+  for (let j = 0; j < track.length; j++) {
+    const mod = track.at(j);
+    for (const c of chars.keys()) {
+      const path = paths.get(c);
+      let action = path[i % path.length];
 
-    total.set(c, total.get(c) + chars.get(c));
+      if (mod === '+') action = '+';
+      if (mod === '-') action = '-';
+      if (action === '+') chars.set(c, chars.get(c) + 1);
+      if (action === '-') chars.set(c, Math.max(0, chars.get(c) - 1));
+
+      total.set(c, total.get(c) + chars.get(c));
+    }
+    i++;
   }
 }
 
@@ -57,7 +62,5 @@ const order = Array.from(total.keys())
 
 consola.info('result', order);
 consola.success('Elapsed:', formatElapsedTime(begin - new Date().getTime()));
-
-// auto submit ?
 
 consola.success('Done.');

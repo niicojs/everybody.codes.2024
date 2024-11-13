@@ -59,7 +59,7 @@ export function getGrid(lines) {
  * @returns boolean
  */
 export function inGridRange(grid, x, y) {
-  return y >= 0 && y < grid.length && x >= 0 && x < grid[0].length;
+  return y >= 0 && y < grid.length && x >= 0 && x < grid[y].length;
 }
 
 /**
@@ -234,4 +234,25 @@ export function mergeRanges(ranges) {
     }
   }
   return merged;
+}
+
+/**
+ * All permutations of a string
+ *
+ * @param {string} str
+ * @returns string[]
+ */
+export function stringPermutations(str) {
+  if (str.length <= 2) return str.length === 2 ? [str, str[1] + str[0]] : [str];
+  return str
+    .split('')
+    .reduce(
+      (acc, letter, i) =>
+        acc.concat(
+          stringPermutations(str.slice(0, i) + str.slice(i + 1)).map(
+            (val) => letter + val
+          )
+        ),
+      []
+    );
 }
