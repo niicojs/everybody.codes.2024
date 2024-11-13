@@ -7,9 +7,7 @@ import {
   getCurrentDay,
   getDataLines,
   inGridRange,
-  stringPermutations,
 } from '../utils.js';
-import { console } from 'inspector';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -24,7 +22,7 @@ function buildTrack() {
 
   let track = rawtrack[0][1];
   let previous = [0, 0];
-  let [x, y] = [0, 1];
+  let [x, y] = [1, 0];
   while (rawtrack[y][x] !== 'S') {
     const next = directNeighbors
       .map(([a, b]) => [x + a, y + b])
@@ -90,7 +88,9 @@ for (let i = 0; i < strats.length; i++) {
 consola.log('to check', chars.size);
 
 let i = 0;
-for (let x = 0; x < 2024; x++) {
+let necessary = 11; // each lap shift by 1 so after 11 it reset
+
+for (let x = 0; x < necessary; x++) {
   for (let j = 0; j < track.length; j++) {
     const mod = track.at(j);
     for (const c of chars.keys()) {
