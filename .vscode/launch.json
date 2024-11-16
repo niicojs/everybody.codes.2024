@@ -6,8 +6,8 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
+      "runtimeArgs": ["--env-file", ".env"],
       "program": "${file}",
-      "args": ["--env-file .env"],
       "outputCapture": "std"
     }
   ]

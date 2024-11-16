@@ -1,5 +1,6 @@
 import { consola } from 'consola';
 import { formatElapsedTime, getCurrentDay, getDataLines } from '../utils.js';
+import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -18,5 +19,7 @@ consola.info('check', {
   // length: result.toString().length === 6,
   // first: result.toString()[0] === '2',
 });
+
+await submitAnswer({ day, level: 1, answer: '' });
 
 consola.success('Done.');

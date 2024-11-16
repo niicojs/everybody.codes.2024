@@ -1,6 +1,6 @@
-import 'dotenv/config';
 import { consola } from 'consola';
 import { getCurrentDay, getRawData } from '../utils.js';
+import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -16,5 +16,7 @@ const need = {
 const monsters = getRawData(day).split('');
 const potions = monsters.reduce((acc, m) => acc + (need[m] || 0), 0);
 consola.info('result', potions);
+
+await submitAnswer({ day, level: 1, answer: potions });
 
 consola.success('Done.');

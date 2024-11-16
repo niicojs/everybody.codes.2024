@@ -1,6 +1,6 @@
-import 'dotenv/config';
 import { consola } from 'consola';
 import { chunk, getCurrentDay, getRawData } from '../utils.js';
+import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -22,5 +22,7 @@ for (const [m1, m2] of chunk(monsters, 2)) {
 }
 
 consola.info('result', potions);
+
+await submitAnswer({ day, level: 2, answer: potions });
 
 consola.success('Done.');
