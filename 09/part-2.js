@@ -9,17 +9,23 @@ const begin = new Date().getTime();
 
 const lines = getDataLines(day).map(Number);
 
-const stamps = [1, 3, 5, 10];
+const stamps = [1, 3, 5, 10, 15, 16, 20, 24, 25, 30];
+const cache = new Map();
+for (const s of stamps) cache.set(s, 1);
+// build cache
+for (let i = 2; i <= Math.max(...stamps, ...lines); i++) {
+  if (cache.has(i)) continue;
+  const possible = stamps
+    .map((s) => i - s)
+    .filter((v) => v > 0)
+    .map((v) => 1 + cache.get(v));
+  cache.set(i, Math.min(...possible));
+}
 
 let beetles = 0;
 for (const bright of lines) {
-  let remains = bright;
-  for (let i = stamps.length - 1; i >= 0; i--) {
-    while (remains >= stamps[i]) {
-      remains -= stamps[i];
-      beetles++;
-    }
-  }
+  const x = cache.get(bright);
+  beetles += x;
 }
 
 consola.info('result', beetles);
