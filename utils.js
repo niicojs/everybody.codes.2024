@@ -52,6 +52,26 @@ export function getGrid(lines) {
 }
 
 /**
+ * Converts an array of strings into a map, splitting each string using a delimiter.
+ * Each string is expected to contain a pair of values separated by the delimiter.
+ * The first value is used as the key and the second value is a comma-separated list
+ * which is split into an array and stored as the value.
+ *
+ * @param {string[]} lines - An array of strings, each containing a pair of values.
+ * @param {string} [delim=':'] - The delimiter used to split each string into a pair of values.
+ * @returns {Map<string, string[]>} - A map where each key is a string and each value is an array of strings.
+ */
+
+export function getFromToMap(lines, delim = ':') {
+  const map = new Map();
+  for (const line of lines) {
+    const [from, to] = line.split(delim);
+    map.set(from, to.split(','));
+  }
+  return map;
+}
+
+/**
  *
  * @param {any[][]} grid
  * @param {number} x

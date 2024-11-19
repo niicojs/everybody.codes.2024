@@ -16,7 +16,7 @@ const lines = getDataLines(day);
 const map = getFromToMap(lines);
 
 let termites = new Map();
-termites.set('A', 1);
+termites.set('Z', 1);
 
 function oneday() {
   const newTermites = new Map();
@@ -28,11 +28,13 @@ function oneday() {
   return newTermites;
 }
 
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 10; i++) {
   termites = oneday();
 }
 
 let result = termites.values().reduce((a, b) => a + b, 0);
 
 consola.info('result', result);
-consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
+consola.success('Elapsed:', formatElapsedTime(begin - new Date().getTime()));
+
+consola.success('Done.');

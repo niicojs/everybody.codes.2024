@@ -1,6 +1,6 @@
 import { consola } from 'consola';
 import { formatElapsedTime, getCurrentDay, getDataLines } from '../utils.js';
-import Heap from 'heap';
+import Heap from 'tinyqueue';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -17,12 +17,12 @@ for (const [from, tos] of data) {
   branches.set(from, tos);
 }
 
-const heap = new Heap((a, b) => a.length - b.length);
+const heap = new Heap([], (a, b) => a.length - b.length);
 heap.push(['RR']);
 
 const results = new Map();
 
-while (!heap.empty()) {
+while (heap.length > 0) {
   const path = heap.pop();
   const last = path.at(-1);
   const next = branches.get(last);
