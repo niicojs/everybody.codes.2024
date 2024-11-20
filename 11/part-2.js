@@ -35,6 +35,4 @@ for (let i = 0; i < 10; i++) {
 let result = termites.values().reduce((a, b) => a + b, 0);
 
 consola.info('result', result);
-consola.success('Elapsed:', formatElapsedTime(begin - new Date().getTime()));
-
-consola.success('Done.');
+consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));

@@ -11,7 +11,7 @@ const begin = new Date().getTime();
 const lines = getDataLines(day);
 
 consola.info('result', '');
-consola.success('Elapsed:', formatElapsedTime(begin - new Date().getTime()));
+consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
 
 consola.info('check', {
   // ok: result === 0,
@@ -20,6 +20,4 @@ consola.info('check', {
   // first: result.toString()[0] === '2',
 });
 
-await submitAnswer({ day, level: 1, answer: '' });
-
-consola.success('Done.');
+// await submitAnswer({ day, level: 1, answer: '' });

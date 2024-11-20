@@ -5,6 +5,7 @@ import {
   getDataLines,
   getGrid,
 } from '../utils.js';
+import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -41,6 +42,7 @@ const targets = [];
 for (let y = grid.length - 1; y >= 0; y--) {
   for (let x = 0; x < grid[y].length; x++) {
     if (grid[y][x] === 'T') targets.push([x, y]);
+    else if (grid[y][x] === 'H') targets.push([x, y], [x, y]);
   }
 }
 

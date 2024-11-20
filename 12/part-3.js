@@ -3,8 +3,8 @@ import {
   formatElapsedTime,
   getCurrentDay,
   getDataLines,
-  getGrid,
 } from '../utils.js';
+import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -12,8 +12,21 @@ const day = getCurrentDay();
 consola.start('Starting', day);
 const begin = new Date().getTime();
 
-const lines = getDataLines(day).reverse();
-const grid = getGrid(lines);
+const meteors = getDataLines(day)
+  .map((l) => l.split(' '))
+  .map(([a, b]) => [+a + 1, +b + 1]); // relative to A
+
+console.log(meteors);
+
+const [maxx, maxy] = [
+  Math.max(...meteors.map((m) => m[0])),
+  Math.max(...meteors.map((m) => m[1])),
+];
+
+const grid = new Array(maxy + 1).fill(0).map((_, i) => {
+  if (i === 0) return new Array(maxx + 1).fill('=');
+  return new Array(maxx + 1).fill('.');
+});
 
 export const printGrid = (grid) => {
   const pad = (grid.length - 1).toString().length;
@@ -29,11 +42,18 @@ export const printGrid = (grid) => {
   console.log(''.padStart(pad, ' ') + ' └' + '─'.repeat(grid[0].length) + '┘');
 };
 
-printGrid(grid);
-
 const A = [1, 1];
 const B = [1, 2];
 const C = [1, 3];
+grid[1][1] = 'A';
+grid[2][1] = 'B';
+grid[3][1] = 'C';
+
+for (const [a, b] of meteors) {
+  grid[b][a] = '#';
+}
+
+printGrid(grid);
 
 const segment = [C, B, A];
 
@@ -41,8 +61,11 @@ const targets = [];
 for (let y = grid.length - 1; y >= 0; y--) {
   for (let x = 0; x < grid[y].length; x++) {
     if (grid[y][x] === 'T') targets.push([x, y]);
+    else if (grid[y][x] === 'H') targets.push([x, y], [x, y]);
   }
 }
+
+consola.log({ target: targets });
 
 const fire = (from, to) => {
   const [a, b] = from;
@@ -71,8 +94,18 @@ for (let i = 0; i < targets.length; i++) {
     else s = (s + 1) % segment.length;
   } while (power === 0);
 
+  consola.log('target', from, { x, y }, { power }, from[1]);
   result += from[1] * power;
 }
 
 consola.info('result', result);
 consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
+
+// consola.info('check', {
+// ok: result === 0,
+// already: [].includes(result),
+// length: result.toString().length === 6,
+// first: result.toString()[0] === '2',
+// });
+
+// await submitAnswer({ day, level: 1, answer: '' });

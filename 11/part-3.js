@@ -5,7 +5,6 @@ import {
   getDataLines,
   getFromToMap,
 } from '../utils.js';
-import { submitAnswer } from '../e-c.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -46,6 +45,4 @@ for (const t of types) {
 }
 
 console.log('result', max - min);
-consola.success('Elapsed:', formatElapsedTime(begin - new Date().getTime()));
-
-consola.success('Done.');
+consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
