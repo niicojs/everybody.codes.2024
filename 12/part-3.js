@@ -1,111 +1,111 @@
 import { consola } from 'consola';
-import {
-  formatElapsedTime,
-  getCurrentDay,
-  getDataLines,
-} from '../utils.js';
-import { submitAnswer } from '../e-c.js';
+import { getCurrentDay, getDataLines } from '../utils.js';
 
-consola.wrapAll();
-const day = getCurrentDay();
-
-consola.start('Starting', day);
-const begin = new Date().getTime();
-
-const meteors = getDataLines(day)
-  .map((l) => l.split(' '))
-  .map(([a, b]) => [+a + 1, +b + 1]); // relative to A
-
-console.log(meteors);
-
-const [maxx, maxy] = [
-  Math.max(...meteors.map((m) => m[0])),
-  Math.max(...meteors.map((m) => m[1])),
+const cache = [
+  1164, 1073, 1036, 935, 1081, 913, 1578, 1128, 1654, 1692, 1194, 1581, 1202,
+  1466, 1499, 927, 874, 1366, 1326, 1463, 1045, 848, 836, 1327, 917, 893, 971,
+  1556, 1428, 1156, 1424, 891, 1217, 884, 986, 1199, 1248, 862, 1303, 1443,
+  1295, 1274, 971, 937, 955, 983, 927, 1691, 1420, 935, 1367, 973, 663, 1606,
+  1219, 1600, 892, 885, 1422, 1472, 1107, 1489, 1444, 889, 1124, 857, 1099,
+  1145, 1365, 1626, 861, 840, 1099, 944, 884, 1452, 959, 1202, 1286, 892, 1191,
+  1433, 1615, 1492, 867, 1331, 856, 1728, 957, 1240, 1244, 1619, 1545, 1368,
+  915, 873, 1220, 944, 843, 1473, 865, 883, 1576, 891, 1095, 1036, 900, 928,
+  1158, 5550, 1011, 1043, 884, 1515, 859, 931, 889, 1601, 1023, 1030, 1157,
+  1168, 1306, 1424, 1047, 1484, 1508, 905, 1272, 1657, 1041, 1071, 838, 938,
+  1445, 901, 1184, 1588, 995, 856, 1204, 1087, 1346, 904, 1663, 925, 871, 859,
+  1287, 860, 1164, 910, 874, 1507, 842, 1196, 1062, 1021, 1287, 1489, 1118,
+  1455, 1072, 1537, 1023, 1381, 985, 1200, 1562, 863, 943, 838, 1344, 842, 1141,
+  886, 860, 1274, 1044, 1201, 1191, 851, 1518, 904, 1633, 983, 1018, 911, 1413,
+  1411, 934, 1258, 1153, 1589, 897, 1177, 1389, 1099, 961, 1230, 909, 1532,
+  1113, 1432, 1530, 909, 1108, 835, 913, 931, 920, 1419, 1465, 907, 1281, 1107,
+  1245, 1109, 881, 1306, 1434, 922, 876, 1443, 865, 980, 1319, 1296, 1297, 924,
+  943, 1468, 922, 873, 865, 1383, 951, 1007, 1190, 1310, 1535, 1405, 941, 1516,
+  1427, 1547, 1213, 1122, 1083, 1040, 1641, 873, 1408, 930, 839, 1045, 1525,
+  961, 1346, 1435, 886, 888, 1200, 993, 876, 1504, 1148, 1548, 1346, 1345, 856,
+  1176, 1215, 949, 1540, 882, 1258, 916, 1216, 1049, 940, 921, 1132, 1215, 882,
+  1294, 850, 836, 1492, 1136, 1149, 916, 1201, 912, 1033, 947, 1215, 1162, 1064,
+  909, 1456, 1605, 1006, 1391, 1322, 1413, 1669, 961, 962, 927, 1532, 1316, 914,
+  1452, 962, 1087, 1467, 1228, 1184, 968, 852, 969, 1335, 1215, 1141, 1021, 872,
+  858, 1454, 1426, 1268, 1371, 1589, 1291, 851, 986, 1850, 868, 1292, 1551,
+  1459, 878, 1317, 1330, 1491, 1335, 1518, 3700, 858, 1165, 1563, 1150, 1125,
+  1480, 892, 1088, 5, 1336, 1243, 1369, 865, 1534, 974, 1348, 1458, 1405, 866,
+  1247, 881, 1430, 945, 1429, 1408, 1545, 1499, 1616, 1209, 1476, 1029, 1120,
+  1197, 1297, 1109, 908, 952, 1717, 897, 1184, 1073, 1055, 1472, 1144, 1256,
+  845, 845, 1323, 860, 1264, 1350, 875, 981, 1495, 1239, 1198, 1055, 1061, 984,
+  1348, 1199, 932, 1018, 976, 874, 834, 834, 843, 1513, 1260, 984, 881, 1619,
+  910, 879, 854, 1330, 850, 1226, 840, 1443, 845, 857, 1113, 1641, 986, 920,
+  895, 1536, 1364, 1079, 1262, 1173, 947, 1092, 891, 1210, 1730, 1160, 1295,
+  1132, 1065, 891, 1188, 1297, 1145, 924, 1167, 1281, 927, 1348, 1076, 1127,
+  854, 1545, 902, 1157, 844, 842, 953, 1403, 1385, 1589, 1314, 1617, 953, 1558,
+  917, 837, 1221, 1056, 1238, 1383, 1713, 1182, 916, 1193, 1212, 1177, 1527,
+  921, 839, 1561, 963, 1169, 903, 1200, 1536, 927, 1037, 966, 939, 1044, 1159,
 ];
 
-const grid = new Array(maxy + 1).fill(0).map((_, i) => {
-  if (i === 0) return new Array(maxx + 1).fill('=');
-  return new Array(maxx + 1).fill('.');
-});
+function getPowerMeteor(src, ndTgt) {
+  for (let delay = 0; delay < 10; delay++) {
+    const tgt = [ndTgt[0] - delay, ndTgt[1] - delay];
+    const dx = tgt[0] - src[0];
+    const dy = tgt[1] - src[1];
 
-export const printGrid = (grid) => {
-  const pad = (grid.length - 1).toString().length;
-  console.log(''.padStart(pad, ' ') + ' ┌' + '─'.repeat(grid[0].length) + '┐');
-  for (let y = grid.length - 1; y >= 0; y--) {
-    let line = y.toString().padStart(pad, ' ') + ' │';
-    for (let x = 0; x < grid[y].length; x++) {
-      line += grid[y][x];
+    // Ascending case
+    let p = Math.floor(dx / 2);
+    if (dx === dy && dx % 2 === 0) {
+      return [p + src[1], p * (1 + src[1])];
     }
-    line += '│';
-    console.log(line);
+
+    // Horizontal case
+    let t = dx - dy;
+    p = dy - Math.floor(dx / 2);
+    if (dx % 2 === 0 && 0 < t && t <= p) {
+      return [p + src[1], p * (1 + src[1])];
+    }
+
+    // Descending case
+    t = Math.floor(dx / 2) - Math.floor((2 * dy) / 3);
+    p = Math.floor(dy / 3);
+    if (dy % 3 === 0 && dx % 2 === 0 && t > 0) {
+      return [p + src[1], p * (1 + src[1])];
+    }
   }
-  console.log(''.padStart(pad, ' ') + ' └' + '─'.repeat(grid[0].length) + '┘');
-};
-
-const A = [1, 1];
-const B = [1, 2];
-const C = [1, 3];
-grid[1][1] = 'A';
-grid[2][1] = 'B';
-grid[3][1] = 'C';
-
-for (const [a, b] of meteors) {
-  grid[b][a] = '#';
+  return [-1, Infinity];
 }
 
-printGrid(grid);
+function part3() {
+  const day = getCurrentDay();
 
-const segment = [C, B, A];
+  consola.start('Starting', day);
 
-const targets = [];
-for (let y = grid.length - 1; y >= 0; y--) {
-  for (let x = 0; x < grid[y].length; x++) {
-    if (grid[y][x] === 'T') targets.push([x, y]);
-    else if (grid[y][x] === 'H') targets.push([x, y], [x, y]);
+  const lines = getDataLines(day);
+
+  const srcs = [
+    [0, 0],
+    [0, 1],
+    [0, 2],
+  ];
+
+  const meteors = [];
+  for (const l of lines) {
+    const [x, y] = l.split(' ');
+    meteors.push([+x, +y]);
   }
+
+  let tot = 0;
+  for (let i = 0; i < meteors.length; i++) {
+    const m = meteors[i];
+    const pwrs = srcs.map((s) => getPowerMeteor(s, m));
+
+    // Find max power using comparable logic to Python
+    const maxPwr = pwrs.reduce((max, curr) => {
+      if (curr[0] > max[0] || (curr[0] === max[0] && -curr[1] > -max[1])) {
+        return curr;
+      }
+      return max;
+    });
+
+    tot += maxPwr[1];
+  }
+
+  return tot;
 }
 
-consola.log({ target: targets });
-
-const fire = (from, to) => {
-  const [a, b] = from;
-  const [x, y] = to;
-
-  const w = x - a;
-  const h = b - y;
-
-  const power = (w - h) / 3;
-
-  if (Math.round(power) !== power) return 0;
-  return power;
-};
-
-let result = 0;
-for (let i = 0; i < targets.length; i++) {
-  const [x, y] = targets[i];
-
-  let from = [0, 0];
-  let s = 0;
-  let power = 0;
-  do {
-    from = segment.at(s);
-    power = fire(from, [x, y]);
-    if (power > 0) segment.push(segment.shift());
-    else s = (s + 1) % segment.length;
-  } while (power === 0);
-
-  consola.log('target', from, { x, y }, { power }, from[1]);
-  result += from[1] * power;
-}
-
-consola.info('result', result);
-consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
-
-// consola.info('check', {
-// ok: result === 0,
-// already: [].includes(result),
-// length: result.toString().length === 6,
-// first: result.toString()[0] === '2',
-// });
-
-// await submitAnswer({ day, level: 1, answer: '' });
+consola.success(part3());
