@@ -146,6 +146,16 @@ export const diagNeighbors = [
 ];
 export const neighbors = [...diagNeighbors, ...directNeighbors];
 
+/** @type {[number, number, number][]} */
+export const directNeighbors3D = [
+  [0, 1, 0],
+  [1, 0, 0],
+  [0, -1, 0],
+  [-1, 0, 0],
+  [0, 0, 1],
+  [0, 0, -1],
+];
+
 export function chunk(arr, len) {
   arr = [...arr];
   return [...Array(Math.ceil(arr.length / len))].map((_, i) =>
@@ -201,9 +211,17 @@ export function dist([x1, y1], [x2, y2]) {
   return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5;
 }
 
-export function manhattan([x1, y1], [x2, y2]) {
-  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+export function manhattan([x1, y1, z1 = 0], [x2, y2, z2 = 0]) {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2) + Math.abs(z1 - z2);
 }
+
+/**
+ * Checks if a given coordinate is present in a path.
+ *
+ * @param {[number, number][]} path - An array of coordinates representing the path.
+ * @param {[number, number]} point - A coordinate represented by an array with two numbers.
+ * @returns {boolean} - Returns true if the coordinate is found in the path, otherwise false.
+ */
 
 export const inPath = (path, [x, y]) =>
   path.some(([i, j]) => i === x && j === y);
