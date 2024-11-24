@@ -31,7 +31,7 @@ for (const { x, y, cell } of enumGrid(grid)) {
   }
 }
 
-export const printGrid = (grid, path = []) => {
+const printGrid = (grid, path = []) => {
   const pad = (grid.length - 1).toString().length;
   console.log(''.padStart(pad, ' ') + ' ┌' + '─'.repeat(grid[0].length) + '┐');
   for (let y = 0; y < grid.length; y++) {
