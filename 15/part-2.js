@@ -9,7 +9,6 @@ import {
   getGrid,
   inGridRange,
   inPath,
-  memoize,
 } from '../utils.js';
 
 consola.wrapAll();
@@ -39,30 +38,42 @@ const printGrid = (grid, path = []) => {
   console.log(''.padStart(pad, ' ') + ' └' + '─'.repeat(grid[0].length) + '┘');
 };
 
-let start = [0, 0];
-let herbstypes = new Map();
-for (const { x, y, cell } of enumGrid(grid)) {
-  if (y === 0 && cell === '.') start = [x, y];
-  else if (cell >= 'A' && cell <= 'Z') {
-    const already = herbstypes.get(cell) || [];
-    herbstypes.set(cell, [...already, [x, y]]);
-  } else if (cell === '~') grid[y][x] = '#';
-}
+const key = ([a, b], herbs) => {
+  let k = `${a},${b}`;
+  if (herbs) k += ` - ${Array.from(herbs).join(',')}`;
+  return k;
+};
 
-// consola.log({ start, herbs: herbstypes });
+const solve = (grid, from) => {
+  // find all herbs
+  const herbs = new Set();
+  for (const { cell } of enumGrid(grid)) {
+    if (cell >= 'A' && cell <= 'Z') herbs.add(cell);
+  }
 
-const key = ([a, b]) => `${a},${b}`;
-
-const findPath = memoize((from, to) => {
+  // find a path that goes through all herbs and back to start
   const heap = new Heap((a, b) => a.path.length - b.path.length);
-  heap.push({ path: [from] });
-  const done = new Set([key(from)]);
+  heap.push({ path: [from], picked: new Set() });
+  const done = new Set([key(from, new Set())]);
 
   while (!heap.empty()) {
-    const { path } = heap.pop();
+    const { path, picked } = heap.pop();
     const pos = path.at(-1);
 
-    if (pos[0] === to[0] && pos[1] === to[1]) return path;
+    let newpicked = picked;
+    const v = grid[pos[1]][pos[0]];
+    if (v >= 'A' && v <= 'Z') {
+      if (herbs.has(v) && !picked.has(v)) {
+        newpicked = new Set(picked.keys());
+        newpicked.add(v);
+      }
+    }
+
+    if (newpicked.size === herbs.size) {
+      if (pos[0] === from[0] && pos[1] === from[1]) {
+        return path.length - 1;
+      }
+    }
 
     directNeighbors
       .map(([a, b]) => [pos[0] + a, pos[1] + b])
@@ -70,72 +81,27 @@ const findPath = memoize((from, to) => {
         ([a, b]) =>
           inGridRange(grid, a, b) &&
           grid[b][a] !== '#' &&
-          !done.has(key([a, b]))
+          grid[b][a] !== '~' &&
+          !done.has(key([a, b], newpicked))
       )
       .forEach((p) => {
-        done.add(key(p));
+        done.add(key(p, newpicked));
         heap.push({
           path: [...path, p],
+          picked: newpicked,
         });
       });
   }
 
   return null;
-});
+};
 
-function findRoute(herbs) {
-  const heap = new Heap((a, b) => a.path.length - b.path.length);
-  heap.push({ path: [start], picked: [] });
-
-  while (!heap.empty()) {
-    const { path, picked } = heap.pop();
-    const pos = path.at(-1);
-
-    if (picked.length === herbs.length) {
-      const route = findPath(pos, start);
-      if (route) {
-        return [...path, ...route.slice(1, -1)];
-      } else {
-        continue;
-      }
-    }
-
-    const h = herbs[picked.length];
-    for (const dest of herbstypes.get(h)) {
-      const route = findPath(pos, dest);
-      if (route) {
-        heap.push({
-          path: [...path, ...route.slice(1)],
-          picked: [...picked, h],
-        });
-      }
-    }
-  }
-
-  return null;
+let start = [0, 0];
+for (let i = 0; i < grid[0].length; i++) {
+  if (grid[0][i] === '.') start = [i, 0];
 }
 
-// guessed looking at the input
-// to test all, stringPermutations('ABCDE').map(s => s.split(''))
-const guesses = [
-  ['A', 'B', 'C', 'D', 'E'],
-  ['A', 'B', 'D', 'E', 'C'],
-  ['A', 'B', 'E', 'D', 'C'],
-];
-
-let result = Infinity;
-let bestroute = [];
-for (const guess of guesses) {
-  const route = findRoute(guess);
-  if (route.length < result) {
-    result = route.length;
-    bestroute = route;
-    console.log(guess.join(','), route.length);
-  }
-}
-
-printGrid(grid, bestroute);
-
+const result = solve(grid, start);
 console.log('result', result);
 
 consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));

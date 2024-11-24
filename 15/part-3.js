@@ -58,7 +58,6 @@ const handleSubGrid = (grid, from, points) => {
   heap.push({ path: [from], picked: new Set(), pt: new Set() });
   const done = new Set([key(from, new Set())]);
 
-  // always to back to start
   const ptset = new Set(points.map((p) => `${p[0]},${p[1]}`));
 
   while (!heap.empty()) {
