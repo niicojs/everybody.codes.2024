@@ -1,5 +1,10 @@
 import { consola } from 'consola';
-import { formatElapsedTime, getCurrentDay, getDataLines } from '../utils.js';
+import {
+  formatElapsedTime,
+  getCurrentDay,
+  getDataLines,
+  memoize,
+} from '../utils.js';
 
 consola.wrapAll();
 const day = getCurrentDay();
@@ -18,14 +23,6 @@ lines.slice(1).forEach((line) => {
     if (val.length > 0) cols[i].push(val);
   }
 });
-
-const display = (state) => {
-  let d = '';
-  for (let i = 0; i < size; i++) {
-    d += cols[i][state[i]] + ' ';
-  }
-  console.log(d);
-};
 
 const right = (state, nb = 1) => {
   for (let i = 0; i < size; i++) {
@@ -59,48 +56,48 @@ const gain = (state) => {
 };
 
 const key = (state) => state.join(',');
-const findloop = (state) => {
-  const loop = key(state);
-  let idx = 0;
-  let g = 0;
-  do {
-    right(state, 1);
-    g += gain(state);
-    idx++;
-  } while (key(state) !== loop);
-  return { loop: idx, loopval: g };
-};
+
+const pull = memoize((state) => {
+  const one = right(left(state, 1));
+  const two = right(left(state, -1));
+  const three = right(left(state, 0));
+
+  return [one, two, three];
+});
 
 const state = new Array(size).fill(0);
 
-const target = 100;
-let possible = [{ state, value: 0 }];
+const target = 256;
+let states = new Map();
+states.set(key(state), { state, min: 0, max: 0 });
+
 for (let i = 0; i < target; i++) {
-  let next = [];
-  for (const p of possible) {
-    next.push(right(left(p.state, 1)));
-    next.push(right(left(p.state, -1)));
-    next.push(right(p.state));
+  // consola.log(i, states.size);
+  let next = new Map();
+  for (const { state, min, max } of states.values()) {
+    const results = pull(state);
+    for (const res of results) {
+      const k = key(res.state);
+      if (next.has(k)) {
+        next.get(k).min = Math.min(next.get(k).min, min + res.value);
+        next.get(k).max = Math.max(next.get(k).max, max + res.value);
+      } else {
+        next.set(k, {
+          state: res.state,
+          min: min + res.value,
+          max: max + res.value,
+        });
+      }
+    }
   }
-  possible = next;
+  states = next;
 }
 
-consola.log('possible', possible.length);
-const maxc = Math.max(...possible.map((p) => p.value));
-const minc = Math.min(...possible.map((p) => p.value));
+const max = states.values().reduce((p, { max }) => (max > p ? max : p), 0);
+const min = states
+  .values()
+  .reduce((p, { min }) => (min < p ? min : p), Infinity);
 
-// const { loop, loopval } = findloop(state);
+console.log('result', max, min);
 
-// const run = target % loop;
-// const mult = Math.floor(target / loop);
-// let result = 0;
-// for (let i = 0; i < run; i++) {
-//   right(state, 1);
-//   result += gain(state);
-// }
-
-// result += mult * loopval;
-
-// consola.info({ loop, loopval, run, mult });
-consola.info('result', maxc, minc);
 consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
