@@ -122,13 +122,15 @@ for (let i = 0; i < trees.length; i++) {
 
 let min = Infinity;
 for (const [k, v] of distmap) {
-  if (treeset.has(k)) continue;
+  // if (treeset.has(k)) continue;
+
   const s = sum(v);
   if (s < min) {
     min = s;
+    console.log(k, s);
   }
 }
 
-console.log('result', min);
+console.log('result', 237421, min, min === 237421);
 
 consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));

@@ -15,7 +15,7 @@ consola.success('Done in', formatElapsedTime(begin - new Date().getTime()));
 
 consola.info('check', {
   // ok: result === 0,
-  // already: [].includes(result),
+  already: [].includes(result),
   // length: result.toString().length === 6,
   // first: result.toString()[0] === '2',
 });
