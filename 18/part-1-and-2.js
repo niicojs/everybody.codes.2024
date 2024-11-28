@@ -33,19 +33,19 @@ export const printFarm = (grid) => {
 
 const farm = getGrid(getDataLines(day));
 
-let start = [0, 0];
+let start = [];
 const key = ([x, y]) => `${x},${y}`;
 const trees = new Set();
 for (const { x, y, cell } of enumGrid(farm)) {
   if (cell === 'P') trees.add(key([x, y]));
-  if (x === 0 && cell === '.') {
+  if ((x === 0 || x === farm[0].length - 1) && cell === '.') {
     farm[y][x] = '~';
-    start = [x, y];
+    start.push([x, y]);
   }
 }
 
 function waterall() {
-  let water = [start];
+  let water = structuredClone(start);
   const done = new Set();
   let t = 0;
   while (true) {
