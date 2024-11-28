@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quest 17</title>
+    <script src="view.js"></script>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="300"
+      style="margin-top: 50px; margin-left: 50px"
+    ></canvas>
+    <script type="application/javascript">
+      function draw() {
+        const canvas = document.getElementById('canvas');
+        if (canvas.getContext) {
+          const ctx = canvas.getContext('2d');
+
+          const x = 14;
+          for (const { from, to } of constellations) {
+            ctx.fillStyle = 'rgb(204 204 0)';
+            ctx.fillRect(from[0] * x - 4, from[1] * x - 4, 8, 8);
+            ctx.fillRect(to[0] * x - 4, to[1] * x - 4, 8, 8);
+            ctx.fillStyle = 'rgb(0 0 0)';
+            ctx.beginPath();
+            ctx.moveTo(from[0] * x, from[1] * x);
+            ctx.lineTo(to[0] * x, to[1] * x);
+            ctx.stroke();
+          }
+        }
+      }
+      draw();
+    </script>
+  </body>
+</html>

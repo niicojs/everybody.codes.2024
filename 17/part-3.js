@@ -1,3 +1,5 @@
+import { writeFileSync } from 'fs';
+import path from 'path';
 import { consola } from 'consola';
 import {
   enumGrid,
@@ -87,7 +89,22 @@ const findBestGraph = () => {
   return constellations;
 };
 
+const generateView = (constellations) => {
+  let content = 'const constellations = [\n';
+  for (const constellation of constellations) {
+    content += '  // new constellation\n';
+    for (const [k, v] of constellation.graph) {
+      const m = k.match(/(\d+)\,(\d+)\".+\"(\d+)\,(\d+)/);
+      content += `  { from: [${m[1]}, ${m[2]}], to: [${m[3]}, ${m[4]}] },\n`;
+    }
+  }
+  content += '];\n';
+  writeFileSync(path.join(import.meta.dirname, 'view.js'), content, 'utf8');
+};
+
 const constellations = findBestGraph();
+generateView(constellations);
+
 constellations.sort((a, b) => b.size - a.size);
 
 const result = constellations
